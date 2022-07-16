@@ -1,0 +1,46 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: distance
+  namespace: bionic-demo
+spec:
+  ports:
+  - name: "8081"
+    port: 8081
+    targetPort: 8081
+    nodePort: 30002 #port exposed on localhost
+  selector:
+    app: distance
+  type: LoadBalancer
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distance
+  namespace: bionic-demo
+spec:
+  selector:
+    matchLabels:
+      app: distance
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: distance
+    spec:
+      containers:
+      - image: pstemberbionic/distance:1.0.0
+        name: distance
+        ports:
+        - containerPort: 8081
+        resources: {}
+        env: 
+          - name: "DOCKER"
+            value: "1"
+
+      restartPolicy: Always
